@@ -1,80 +1,52 @@
 package com.example.application.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id; 
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 public class Tapahtuma {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String tapahtumanNimi;
-    private String tapahtumanOsoite;
-    private int tapahtumanPostinumero;
-    private String tapahtumanPostitoimipaikka;
-    private int tapahtumanPuhelinnumero;
-    private String tapahtumanKuvaus;
+    private String nimi;
+    private LocalDateTime aika;
+    private String osoite;
+    private int postinumero;
+    private String postitoimipaikka;
+    private String puhelinnumero;
+    private String kuvaus;
 
+    @ManyToOne
+    @JoinColumn(name = "paikka_id")
+    private Paikat paikka;
+
+    @ManyToOne
+    @JoinColumn(name = "jarjestaja_id")
+    private Jarjestaja jarjestaja;
+
+    // Constructors
     public Tapahtuma() {}
 
-    public Tapahtuma(Long id, String tapahtumanNimi, String tapahtumanOsoite, int tapahtumanPostinumero, String tapahtumanPostitoimipaikka, int tapahtumanPuhelinnumero, String tapahtumanKuvaus) {
-        this.id = id;
-        this.tapahtumanNimi = tapahtumanNimi;
-        this.tapahtumanOsoite = tapahtumanOsoite;
-        this.tapahtumanPostinumero = tapahtumanPostinumero;
-        this.tapahtumanPostitoimipaikka = tapahtumanPostitoimipaikka;
-        this.tapahtumanPuhelinnumero = tapahtumanPuhelinnumero;
-        this.tapahtumanKuvaus = tapahtumanKuvaus;
-    }
-
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getTapahtumanNimi() {
-        return tapahtumanNimi;
-    }
-    public void setTapahtumanNimi(String tapahtumanNimi) {
-        this.tapahtumanNimi = tapahtumanNimi;
-    }
-    public String getTapahtumanOsoite() {
-        return tapahtumanOsoite;
-    }
-    public void setTapahtumanOsoite(String tapahtumanOsoite) {
-        this.tapahtumanOsoite = tapahtumanOsoite;
-    }
-    public int getTapahtumanPostinumero() {
-        return tapahtumanPostinumero;
-    }
-    public void setTapahtumanPostinumero(int tapahtumanPostinumero) {
-        this.tapahtumanPostinumero = tapahtumanPostinumero;
-    }
-    public String getTapahtumanPostitoimipaikka() {
-        return tapahtumanPostitoimipaikka;
-    }
-    public void setTapahtumanPostitoimipaikka(String tapahtumanPostitoimipaikka) {
-        this.tapahtumanPostitoimipaikka = tapahtumanPostitoimipaikka;
-    }
-    public int getTapahtumanPuhelinnumero() {
-        return tapahtumanPuhelinnumero;
-    }
-    public void setTapahtumanPuhelinnumero(int tapahtumanPuhelinnumero) {
-        this.tapahtumanPuhelinnumero = tapahtumanPuhelinnumero;
-    }
-    public String getTapahtumanKuvaus() {
-        return tapahtumanKuvaus;
-    }
-    public void setTapahtumanKuvaus(String tapahtumanKuvaus) {
-        this.tapahtumanKuvaus = tapahtumanKuvaus;
-    }
-
-
-    
-
+    // Getters and Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNimi() { return nimi; }
+    public void setNimi(String nimi) { this.nimi = nimi; }
+    public LocalDateTime getAika() { return aika; }
+    public void setAika(LocalDateTime aika) { this.aika = aika; }
+    public String getOsoite() { return osoite; }
+    public void setOsoite(String osoite) { this.osoite = osoite; }
+    public int getPostinumero() { return postinumero; }
+    public void setPostinumero(int postinumero) { this.postinumero = postinumero; }
+    public String getPostitoimipaikka() { return postitoimipaikka; }
+    public void setPostitoimipaikka(String postitoimipaikka) { this.postitoimipaikka = postitoimipaikka; }
+    public String getPuhelinnumero() { return puhelinnumero; }
+    public void setPuhelinnumero(String puhelinnumero) { this.puhelinnumero = puhelinnumero; }
+    public String getKuvaus() { return kuvaus; }
+    public void setKuvaus(String kuvaus) { this.kuvaus = kuvaus; }
+    public Paikat getPaikka() { return paikka; }
+    public void setPaikka(Paikat paikka) { this.paikka = paikka; }
+    public Jarjestaja getJarjestaja() { return jarjestaja; }
+    public void setJarjestaja(Jarjestaja jarjestaja) { this.jarjestaja = jarjestaja; }
 }

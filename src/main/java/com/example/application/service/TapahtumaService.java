@@ -1,5 +1,5 @@
 package com.example.application.service;
 
-public class EventService {
+public class TapahtumaService {
     
 }

@@ -4,7 +4,7 @@ import com.example.application.ui.Footer;
 import com.example.application.ui.Header;
 import com.example.application.ui.Navbar;
 import com.example.application.views.koti.KotiView;
-import com.example.application.views.jarjestajat.JarjestajatView;
+import com.example.application.views.jarjestajat.JarjestajaView;
 import com.example.application.views.paikat.PaikatView;
 import com.example.application.views.tapahtumat.TapahtumaView;
 import com.example.application.views.LoginView;
@@ -35,7 +35,7 @@ public class MainView extends AppLayout {
         // Add navigation links to navbar
         navbar.add(new RouterLink("Home", KotiView.class));
         navbar.add(new RouterLink("Places", PaikatView.class));
-        navbar.add(new RouterLink("Organizers", JarjestajatView.class));
+        navbar.add(new RouterLink("Organizers", JarjestajaView.class));
         navbar.add(new RouterLink("Events", TapahtumaView.class));
         navbar.add(new RouterLink("Filter", GridwithFiltersView.class));
         navbar.add(new RouterLink("Login", LoginView.class));
