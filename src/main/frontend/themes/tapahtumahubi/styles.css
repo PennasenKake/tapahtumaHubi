@@ -1,1 +1,7 @@
 @import url('./main-layout.css');
+@import url('./views/koti-view.css');
+@import url('./views/paikat-view.css');
+@import url('./views/jarjestajat-view.css');
+@import url('./views/tapahtumat-view.css');
+@import url('./views/gridwith-filters-view.css');
+@import url('./custom.css');

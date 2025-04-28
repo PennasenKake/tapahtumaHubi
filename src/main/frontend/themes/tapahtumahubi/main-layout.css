@@ -1,26 +1,142 @@
-header nav a:any-link {
+
+
+
+.header {
+  position: relative; /* Asetetaan suhteelliseksi, jotta lapsielementit voivat olla absoluuttisia */
+  padding: 0; /* Poistetaan headerin oma padding, jotta kuva täyttää sen */
+  text-align: center; /* Keskitetään teksti, jos ei absoluuttisesti sijoitettu */
+  margin: 0 auto;
+  font-size: 2rem;
+  overflow: hidden; /* Piilotetaan kuvan ylivuoto, jos tarpeen */
+  width: 100%; /* Varmistetaan, että header on koko sivun levyinen */
+  height: 100px; /* Aseta haluttu korkeus headerille */
+}
+
+.header-image {
+  display: block; /* Estää ylimääräisen tilan kuvan ympärillä */
+  width: 100%; /* Kuva leveäksi */
+  height: 100%; /* Kuva korkeaksi */
+  object-fit: cover; /* Skaalaa kuvan täyttämään alueen säilyttäen kuvasuhteen (tarvittaessa rajaa) */
+}
+
+.header-title {
+  position: absolute; /* Asetetaan absoluuttiseksi, jotta se voidaan sijoittaa kuvan päälle */
+  top: 50%; /* Sijoitetaan pystysuunnassa keskelle */
+  left: 50%; /* Sijoitetaan vaakasuunnassa keskelle */
+  transform: translate(-50%, -50%); /* Keskitetään tarkasti */
+  color: black; /* Tekstin väri (voit muuttaa) */
+  font-size: 3rem; /* Tekstin koko (voit muuttaa) */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Lisätään varjoa tekstille luettavuuden parantamiseksi */
+  width: 100%; /* Varmistetaan, että teksti voi olla leveä */
+  text-align: right; /* Keskitetään teksti absoluuttisessa sijainnissaan */
+  padding-right: 50%;
+}
+
+@media (max-width: 600px) {
+  .header-title {
+      font-size: 2rem;
+  }
+}
+
+.navbar {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+}
+
+.navbar-tabs {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-tabs a {
+  padding: 0.5rem 1rem;
   text-decoration: none;
-  padding: 0 var(--lumo-space-s);
-  border-radius: var(--lumo-border-radius-m);
-  outline: 0;
+  color: #007bff;
 }
 
-header nav a:hover {
-  color: var(--lumo-header-text-color);
+.navbar-tabs a:hover {
+  background-color: #e9ecef;
 }
 
-header nav a:active {
-  background-color: var(--lumo-contrast-5pct);
+.navbar-tabs .tab[theme~="active"] a {
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
 }
 
-header nav a:focus-visible {
-  box-shadow: 0 0 0 2px var(--lumo-primary-color-50pct);
+@media (max-width: 600px) {
+  .navbar-tabs {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .navbar-tabs a {
+      padding: 0.5rem;
+      width: 100%;
+      text-align: center;
+  }
 }
 
-header nav a[highlight] vaadin-icon {
-  color: var(--lumo-primary-text-color);
+.footer {
+  background-color:lightgrey;
+  color: #000;
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  flex-shrink: 0;
+  position: fixed;
+  z-index: 1;
+  bottom: 0;
 }
 
-header nav a[highlight] {
-  background-color: var(--lumo-primary-color-10pct);
+html, body, vaadin-app-layout {
+  height: 100%;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .footer {
+      font-size: 0.9rem;
+      padding: 0.5rem;
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 1rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .content {
+      padding: 0.5rem;
+  }
+}
+
+vaadin-scroller[slot="drawer"] {
+  padding: var(--lumo-space-s);
+}
+
+vaadin-side-nav-item vaadin-icon {
+  padding: 0;
+}
+
+[slot="drawer"]:is(header, footer) {
+  display: flex;
+  align-items: center;
+  gap: var(--lumo-space-s);
+  padding: var(--lumo-space-s) var(--lumo-space-m);
+  min-height: var(--lumo-size-xl);
+  box-sizing: border-box;
+}
+
+[slot="drawer"]:is(header, footer):is(:empty) {
+  display: none;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
