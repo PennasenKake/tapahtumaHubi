@@ -6,7 +6,7 @@ Data ja entiteetit	        Yksi entiteetti + CRUD	                        1
 Data ja entiteetit	        Toinen entiteetti, 1:1 relaatio	                2			
 Data ja entiteetit	        Kolmas entiteetti, 1:m relaatio	                3			
 Data ja entiteetit	        Neljäs entiteetti, m:m relaatio	                4			
-Data ja entiteetit	        Kaikille muokkaus ja poisto	                    5			
+Data ja entiteetit	        Kaikille muokkaus ja poisto	                    5			✅          onnistuu
 
 Suodattimet GRIDissä	    Suodatus yhdelle sarakkeelle	                1			
 Suodattimet GRIDissä	    Suodatus kahdelle tai useammalle sarakkeelle	2			
@@ -26,8 +26,8 @@ Ulkoasu (SPA)	            Navigointipalkki	                            3			 ✅
 Ulkoasu (SPA)	            Footer	                                        4			 ✅         Oli vaikea saada asettumaan, mutta tyydyin toteutukseen
 Ulkoasu (SPA)	            Kolme erityyppistä sisältösivua	                5			 ✅         Paikat, järjestäjä,, tapahtumat ja kirjautumis sivu + etusivu
 
-Autentikointi ja tietoturva	Security-palikka käyttöön	                    1			
-Autentikointi ja tietoturva	Kirjautumissivu	                                2			
+Autentikointi ja tietoturva	Security-palikka käyttöön	                    1			 ✅         löytyy pom.xml luokasta
+Autentikointi ja tietoturva	Kirjautumissivu	                                2			 ✅         LoginView löytyy
 Autentikointi ja tietoturva	Käyttäjäentiteetti + roolit	                    3			
 Autentikointi ja tietoturva	Käyttöoikeus näkymittäin (user/admin)	        4			
 Autentikointi ja tietoturva	Kustomoitu virheilmoitus	                    5			

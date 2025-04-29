@@ -1,0 +1,15 @@
+2025-04-30 00:32:33.463699+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "JARJESTAJA" not found; SQL statement:
+select j1_0.id,j1_0.nimi,j1_0.tyyppi,j1_0.yhteystiedot from jarjestaja j1_0 [42102-232]
+2025-04-30 00:33:08.771958+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "JARJESTAJA" not found; SQL statement:
+select j1_0.id,j1_0.nimi,j1_0.tyyppi,j1_0.yhteystiedot from jarjestaja j1_0 [42102-232]
+2025-04-30 00:33:17.363569+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PAIKAT" not found; SQL statement:
+select p1_0.id,p1_0.kapasiteetti,p1_0.nimi,p1_0.osoite,p1_0.postinumero,p1_0.postitoimipaikka from paikat p1_0 [42102-232]
+2025-04-30 00:33:36.369255+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PAIKAT" not found; SQL statement:
+select p1_0.id,p1_0.kapasiteetti,p1_0.nimi,p1_0.osoite,p1_0.postinumero,p1_0.postitoimipaikka from paikat p1_0 [42102-232]
+2025-04-30 00:35:07.372121+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PAIKAT" not found; SQL statement:
+select p1_0.id,p1_0.kapasiteetti,p1_0.nimi,p1_0.osoite,p1_0.postinumero,p1_0.postitoimipaikka from paikat p1_0 [42102-232]

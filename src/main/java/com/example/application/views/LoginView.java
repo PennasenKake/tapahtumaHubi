@@ -2,6 +2,9 @@
 
 package com.example.application.views;
 
+import com.example.application.service.KayttajaService;
+import com.example.application.views.forms.KayttajaForm;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
@@ -15,6 +18,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility.*;
 @AnonymousAllowed
 public class LoginView extends Div {
 
+    private static final KayttajaService KayttajaService = null;
     private final LoginForm loginForm = new LoginForm();
 
     public LoginView() {
@@ -39,7 +43,13 @@ public class LoginView extends Div {
         loginForm.setAction("login");
         loginForm.addClassName("login-form");
 
-        add(loginForm);
+        Button registerButton = new Button("Rekisteröidy", e -> {
+            KayttajaForm form = new KayttajaForm(KayttajaService);
+            form.open();
+        });
+        registerButton.addClassName("register-button");
+
+        add(loginForm, registerButton);
 
         
     }

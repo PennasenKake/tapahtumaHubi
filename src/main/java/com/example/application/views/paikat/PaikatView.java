@@ -39,13 +39,9 @@ public class PaikatView extends VerticalLayout {
         grid.setColumns("nimi", "osoite", "kapasiteetti", "postinumero", "postitoimipaikka");
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                try {
-                    PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
-                    form.setPaikka(event.getValue());
-                    form.open();
-                } catch (Exception e) {
-                    Notification.show("Paikan lomakkeen avaus epäonnistui: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER);
-                }
+                PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
+                form.setPaikka(event.getValue());
+                form.open();
             }
         });
 
@@ -55,13 +51,9 @@ public class PaikatView extends VerticalLayout {
 
         // Add button
         Button addButton = new Button("Lisää paikka", e -> {
-            try {
-                PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
-                form.setPaikka(new Paikat());
-                form.open();
-            } catch (Exception ex) {
-                Notification.show("Paikan lomakkeen avaus epäonnistui: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER);
-            }
+            PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
+            form.setPaikka(new Paikat());
+            form.open();
         });
 
         // Layout
@@ -80,7 +72,6 @@ public class PaikatView extends VerticalLayout {
                 paikat = paikkaService.findByKapasiteettiGreaterThanEqual(kapasiteetti);
             } catch (NumberFormatException e) {
                 Notification.show("Kapasiteetin on oltava kelvollinen numero!", 3000, Notification.Position.TOP_CENTER);
-                paikat = paikkaService.findAll(); // Reset to all items on invalid input
             }
         }
         grid.setItems(paikat);

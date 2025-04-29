@@ -14,6 +14,7 @@ public class KayttajaService {
     public KayttajaService(KayttajaRepository kayttajaRepository) {
         this.kayttajaRepository = kayttajaRepository;
     }
+    
 
     public List<Kayttaja> findAll() {
         return kayttajaRepository.findAll();
