@@ -48,7 +48,16 @@ public class PaikkaController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePaikka(@PathVariable Long id) {
-        paikkaRepository.deleteById(id);
+    public ResponseEntity<String> deletePaikka(@PathVariable Long id) {
+        Optional<Paikat> paikka = paikkaRepository.findById(id);
+        if (paikka.isPresent()) {
+            if (!paikka.get().getTapahtumat().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Paikkaa ei voi poistaa, koska siihen liittyy tapahtumia.");
+            }
+            paikkaRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }

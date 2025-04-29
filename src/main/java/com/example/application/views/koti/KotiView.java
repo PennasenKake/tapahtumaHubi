@@ -36,6 +36,7 @@ public class KotiView extends Composite<VerticalLayout> {
         Button exploreButton = new Button("Tutustu tapahtumiin", LineAwesomeIcon.CALENDAR.create());
         exploreButton.addClickListener(e -> getUI().ifPresent(ui -> ui.navigate("tapahtumat")));
         
+        
         // Add components to layout
         layout.add(welcome, intro, exploreButton);
     }

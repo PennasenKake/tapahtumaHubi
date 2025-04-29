@@ -21,10 +21,10 @@ Tyylit	                    Lumo Utility-luokkien käyttö	                4			 �
 Tyylit	                    Kustomoitu tyylitiedosto	                    5			 ✅        Löytyy, custom.css, käytetty h2 muokkaus 
 
 Ulkoasu (SPA)	            SPA-sovellus + päänäkymä	                    1			 ✅
-Ulkoasu (SPA)	            Header	                                        2            ✅  
+Ulkoasu (SPA)	            Header	                                        2            ✅         Header, navbar, footer jaettu omiin komponentteihin
 Ulkoasu (SPA)	            Navigointipalkki	                            3			 ✅
 Ulkoasu (SPA)	            Footer	                                        4			 ✅         Oli vaikea saada asettumaan, mutta tyydyin toteutukseen
-Ulkoasu (SPA)	            Kolme erityyppistä sisältösivua	                5			 ✅
+Ulkoasu (SPA)	            Kolme erityyppistä sisältösivua	                5			 ✅         Paikat, järjestäjä,, tapahtumat ja kirjautumis sivu + etusivu
 
 Autentikointi ja tietoturva	Security-palikka käyttöön	                    1			
 Autentikointi ja tietoturva	Kirjautumissivu	                                2			

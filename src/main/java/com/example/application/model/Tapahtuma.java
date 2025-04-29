@@ -2,6 +2,8 @@ package com.example.application.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Tapahtuma {
@@ -21,9 +23,17 @@ public class Tapahtuma {
     @JoinColumn(name = "paikka_id")
     private Paikat paikka;
 
-    @ManyToOne
-    @JoinColumn(name = "jarjestaja_id")
+    @OneToOne
+    @JoinColumn(name = "jarjestaja_id", unique = true)
     private Jarjestaja jarjestaja;
+
+    @ManyToMany
+    @JoinTable(
+        name = "tapahtuma_kayttaja",
+        joinColumns = @JoinColumn(name = "tapahtuma_id"),
+        inverseJoinColumns = @JoinColumn(name = "kayttaja_id")
+    )
+    private List<Kayttaja> osallistujat = new ArrayList<>();
 
     // Constructors
     public Tapahtuma() {}
@@ -49,4 +59,6 @@ public class Tapahtuma {
     public void setPaikka(Paikat paikka) { this.paikka = paikka; }
     public Jarjestaja getJarjestaja() { return jarjestaja; }
     public void setJarjestaja(Jarjestaja jarjestaja) { this.jarjestaja = jarjestaja; }
+    public List<Kayttaja> getOsallistujat() { return osallistujat; }
+    public void setOsallistujat(List<Kayttaja> osallistujat) { this.osallistujat = osallistujat; }
 }

@@ -19,15 +19,23 @@ public class JarjestajaService {
         return jarjestajaRepository.findAll();
     }
 
-    public Jarjestaja save(Jarjestaja jarjestaja) {
-        return jarjestajaRepository.save(jarjestaja);
-    }
-
     public Jarjestaja findById(Long id) {
         return jarjestajaRepository.findById(id).orElse(null);
     }
 
+    public Jarjestaja save(Jarjestaja jarjestaja) {
+        return jarjestajaRepository.save(jarjestaja);
+    }
+
     public void delete(Long id) {
         jarjestajaRepository.deleteById(id);
+    }
+
+    public List<Jarjestaja> findByNimi(String nimi) {
+        return jarjestajaRepository.findByNimiContainingIgnoreCase(nimi);
+    }
+
+    public List<Jarjestaja> findByTyyppi(String tyyppi) {
+        return jarjestajaRepository.findByTyyppi(tyyppi);
     }
 }

@@ -1,96 +1,91 @@
 package com.example.application.views.paikat;
 
+import com.example.application.model.Paikat;
+import com.example.application.service.PaikkaService;
 import com.example.application.views.MainView;
 import com.example.application.views.forms.PaikkaForm;
-import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Main;
-import com.vaadin.flow.component.html.OrderedList;
-import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
-import com.vaadin.flow.theme.lumo.LumoUtility.Display;
-import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
-import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import com.vaadin.flow.theme.lumo.LumoUtility.JustifyContent;
-import com.vaadin.flow.theme.lumo.LumoUtility.ListStyleType;
-import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import com.vaadin.flow.theme.lumo.LumoUtility.MaxWidth;
-import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
-import com.vaadin.flow.theme.lumo.LumoUtility.TextColor;
+import org.vaadin.lineawesome.LineAwesomeIcon;
 
-import java.lang.foreign.PaddingLayout;
-
-import org.springframework.security.access.method.P;
-import org.vaadin.lineawesome.LineAwesomeIconUrl;
+import java.util.List;
 
 @PageTitle("Paikat")
 @Route(value = "paikat", layout = MainView.class)
-@Menu(order = 1, icon = LineAwesomeIconUrl.LOCATION_ARROW_SOLID)
-public class PaikatView extends Main implements HasComponents, HasStyle {
+@Menu(order = 1, icon = "line-awesome:location-arrow-solid")
+public class PaikatView extends VerticalLayout {
 
-    private OrderedList imageContainer;
+    private final PaikkaService paikkaService;
+    private Grid<Paikat> grid;
+    private TextField nimiFilter = new TextField("Suodata nimellä...");
+    private TextField kapasiteettiFilter = new TextField("Suodata kapasiteetilla (väh.)...");
 
-    public PaikatView() {
-        constructUI();
+    public PaikatView(PaikkaService paikkaService) {
+        this.paikkaService = paikkaService;
 
-        imageContainer.add(new PaikatViewCard("Snow mountains under stars",
-                "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new PaikatViewCard("Snow covered mountain",
-                "https://images.unsplash.com/photo-1512273222628-4daea6e55abb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new PaikatViewCard("River between mountains",
-                "https://images.unsplash.com/photo-1536048810607-3dc7f86981cb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=375&q=80"));
-        imageContainer.add(new PaikatViewCard("Milky way on mountains",
-                "https://images.unsplash.com/photo-1515705576963-95cad62945b6?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=750&q=80"));
-        imageContainer.add(new PaikatViewCard("Mountain with fog",
-                "https://images.unsplash.com/photo-1513147122760-ad1d5bf68cdb?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"));
-        imageContainer.add(new PaikatViewCard("Mountain at night",
-                "https://images.unsplash.com/photo-1562832135-14a35d25edef?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=815&q=80"));
+        setSizeFull();
+        add(new H2("Paikat"));
 
-    }
-
-    
-    private void constructUI() {
-        addClassNames("paikat-view");
-        addClassNames(MaxWidth.SCREEN_LARGE, Margin.Horizontal.AUTO, Padding.Bottom.LARGE, Padding.Horizontal.LARGE);
-
-        HorizontalLayout container = new HorizontalLayout();
-        container.addClassNames(AlignItems.CENTER, JustifyContent.BETWEEN);
-
-        VerticalLayout headerContainer = new VerticalLayout();
-        H2 header = new H2("Kauniit tapahtuma paikat");
-        header.addClassNames(Margin.Bottom.NONE, Margin.Top.XLARGE, FontSize.XXXLARGE);
-        Paragraph description = new Paragraph("Royalty free photos and pictures, courtesy of Unsplash");
-        
-        Button button = new Button("Lisää paikka");
-        button.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        button.addClickListener(event -> {
-        PaikkaForm form = new PaikkaForm();
-        form.open();
+        // Grid setup
+        grid = new Grid<>(Paikat.class);
+        grid.setColumns("nimi", "osoite", "kapasiteetti", "postinumero", "postitoimipaikka");
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                try {
+                    PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
+                    form.setPaikka(event.getValue());
+                    form.open();
+                } catch (Exception e) {
+                    Notification.show("Paikan lomakkeen avaus epäonnistui: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+                }
+            }
         });
 
-        description.addClassNames(Margin.Bottom.XLARGE, Margin.Top.NONE, TextColor.SECONDARY);
-        headerContainer.add(header, description);
+        // Filters
+        nimiFilter.addValueChangeListener(e -> updateGrid());
+        kapasiteettiFilter.addValueChangeListener(e -> updateGrid());
 
+        // Add button
+        Button addButton = new Button("Lisää paikka", e -> {
+            try {
+                PaikkaForm form = new PaikkaForm(paikkaService, (Void v) -> updateGrid());
+                form.setPaikka(new Paikat());
+                form.open();
+            } catch (Exception ex) {
+                Notification.show("Paikan lomakkeen avaus epäonnistui: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            }
+        });
 
-        Select<String> sortBy = new Select<>();
-        sortBy.setLabel("Sort by");
-        sortBy.setItems("Popularity", "Newest first", "Oldest first");
-        sortBy.setValue("Popularity");
+        // Layout
+        add(new HorizontalLayout(addButton, nimiFilter, kapasiteettiFilter), grid);
+        updateGrid();
+    }
 
-        imageContainer = new OrderedList();
-        imageContainer.addClassNames(Gap.MEDIUM, Display.GRID, ListStyleType.NONE, Margin.NONE, Padding.NONE);
-
-        container.add(headerContainer, sortBy);
-        add(container, button, imageContainer);
-
+    private void updateGrid() {
+        List<Paikat> paikat = paikkaService.findAll();
+        if (!nimiFilter.isEmpty()) {
+            paikat = paikkaService.findByNimi(nimiFilter.getValue());
+        }
+        if (!kapasiteettiFilter.isEmpty()) {
+            try {
+                int kapasiteetti = Integer.parseInt(kapasiteettiFilter.getValue());
+                paikat = paikkaService.findByKapasiteettiGreaterThanEqual(kapasiteetti);
+            } catch (NumberFormatException e) {
+                Notification.show("Kapasiteetin on oltava kelvollinen numero!", 3000, Notification.Position.TOP_CENTER);
+                paikat = paikkaService.findAll(); // Reset to all items on invalid input
+            }
+        }
+        grid.setItems(paikat);
+        if (paikat.isEmpty()) {
+            Notification.show("Ei tuloksia annetuilla suodattimilla.", 3000, Notification.Position.TOP_CENTER);
+        }
     }
 }

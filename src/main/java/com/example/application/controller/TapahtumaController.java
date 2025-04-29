@@ -1,6 +1,8 @@
 package com.example.application.controller;
 
+import com.example.application.model.Kayttaja;
 import com.example.application.model.Tapahtuma;
+import com.example.application.repository.KayttajaRepository;
 import com.example.application.repository.TapahtumaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,8 +33,11 @@ public class TapahtumaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Tapahtuma createTapahtuma(@RequestBody Tapahtuma tapahtuma) {
-        return tapahtumaRepository.save(tapahtuma);
+    public ResponseEntity<Tapahtuma> createTapahtuma(@RequestBody Tapahtuma tapahtuma) {
+        if (tapahtuma.getPaikka() == null || tapahtuma.getJarjestaja() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(tapahtumaRepository.save(tapahtuma));
     }
 
     @PutMapping("/{id}")
@@ -51,4 +56,17 @@ public class TapahtumaController {
     public void deleteTapahtuma(@PathVariable Long id) {
         tapahtumaRepository.deleteById(id);
     }
+
+    // @PostMapping("/{id}/osallistujat/{kayttajaId}")
+    // public ResponseEntity<Tapahtuma> addOsallistuja(@PathVariable Long id, @PathVariable Long kayttajaId) {
+    //     Optional<Tapahtuma> tapahtumaOpt = tapahtumaRepository.findById(id);
+    //     Optional<Kayttaja> kayttajaOpt = KayttajaRepository.findById(kayttajaId);
+    //     if (tapahtumaOpt.isPresent() && kayttajaOpt.isPresent()) {
+    //         Tapahtuma tapahtuma = tapahtumaOpt.get();
+    //         tapahtuma.getOsallistujat().add(kayttajaOpt.get());
+    //         tapahtumaRepository.save(tapahtuma);
+    //         return ResponseEntity.ok(tapahtuma);
+    //     }
+    //     return ResponseEntity.notFound().build();
+    // }
 }

@@ -3,134 +3,150 @@ package com.example.application.views.tapahtumat;
 import com.example.application.model.Tapahtuma;
 import com.example.application.model.Paikat;
 import com.example.application.model.Jarjestaja;
-import com.example.application.repository.TapahtumaRepository;
+import com.example.application.service.TapahtumaService;
+import com.example.application.service.PaikkaService;
+import com.example.application.service.JarjestajaService;
 import com.example.application.views.MainView;
-import com.example.application.repository.PaikatRepository;
-import com.example.application.repository.JarjestajaRepository;
+import com.example.application.views.forms.TapahtumaForm;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Route(value = "tapahtumat", layout = MainView.class)
 @PageTitle("Tapahtumat | TapahtumaHubi")
 public class TapahtumaView extends VerticalLayout {
 
-    private final TapahtumaRepository tapahtumaRepository;
-    private final PaikatRepository paikatRepository;
-    private final JarjestajaRepository jarjestajaRepository;
+    private final TapahtumaService tapahtumaService;
+    private final PaikkaService paikkaService;
+    private final JarjestajaService jarjestajaService;
     private Grid<Tapahtuma> grid;
-    private Dialog dialog;
-    private Binder<Tapahtuma> binder;
+    private TextField nimiFilter = new TextField("Suodata nimellä...");
+    private DateTimePicker aikaFilter = new DateTimePicker("Suodata ajalta...");
+    private ComboBox<Long> paikkaFilter = new ComboBox<>("Suodata paikalla...");
+    private ComboBox<Long> jarjestajaFilter = new ComboBox<>("Suodata järjestäjällä...");
+    private TextField postinumeroFilter = new TextField("Suodata postinumerolla...");
 
-    public TapahtumaView(TapahtumaRepository tapahtumaRepository, PaikatRepository paikatRepository, JarjestajaRepository jarjestajaRepository) {
-        this.tapahtumaRepository = tapahtumaRepository;
-        this.paikatRepository = paikatRepository;
-        this.jarjestajaRepository = jarjestajaRepository;
+    public TapahtumaView(TapahtumaService tapahtumaService, PaikkaService paikkaService, JarjestajaService jarjestajaService) {
+        this.tapahtumaService = tapahtumaService;
+        this.paikkaService = paikkaService;
+        this.jarjestajaService = jarjestajaService;
 
+        addClassName("tapahtuma-view");
         setSizeFull();
-        addClassName("gridwith-filters-view");
-
-        // Header
         add(new H2("Tapahtumat"));
 
-        // Grid
+        // Grid setup
         grid = new Grid<>(Tapahtuma.class);
-        grid.setColumns("nimi", "aika", "osoite", "postinumero", "postitoimipaikka", "puhelinnumero", "kuvaus");
+        grid.addClassName("tapahtuma-grid");
+        grid.setColumns("nimi", "aika", "puhelinnumero", "kuvaus");
         grid.addColumn(tapahtuma -> tapahtuma.getPaikka() != null ? tapahtuma.getPaikka().getNimi() : "").setHeader("Paikka");
         grid.addColumn(tapahtuma -> tapahtuma.getJarjestaja() != null ? tapahtuma.getJarjestaja().getNimi() : "").setHeader("Järjestäjä");
-        grid.addComponentColumn(tapahtuma -> {
-            Button editButton = new Button("Muokkaa", e -> openEditor(tapahtuma));
-            editButton.addClassName("button-primary");
-            Button deleteButton = new Button("Poista", e -> deleteTapahtuma(tapahtuma));
-            deleteButton.addClassName("button-danger");
-            return new HorizontalLayout(editButton, deleteButton);
-        }).setHeader("Toiminnot");
-        grid.setItems(tapahtumaRepository.findAll());
-        add(grid);
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                try {
+                    TapahtumaForm form = new TapahtumaForm(tapahtumaService, paikkaService, jarjestajaService, (Void v) -> updateGrid());
+                    form.setTapahtuma(event.getValue());
+                    form.open();
+                } catch (Exception e) {
+                    Notification.show("Tapahtuman lomakkeen avaus epäonnistui: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+                }
+            }
+        });
 
-        // Add Button
-        Button addButton = new Button("Lisää Tapahtuma", e -> openEditor(new Tapahtuma()));
+        // Filters
+        paikkaFilter.setItems(paikkaService.findAll().stream().map(Paikat::getId).collect(Collectors.toList()));
+        paikkaFilter.setItemLabelGenerator(id -> {
+            Paikat paikka = paikkaService.findById(id);
+            return paikka != null ? paikka.getNimi() : "Tuntematon paikka";
+        });
+        jarjestajaFilter.setItems(jarjestajaService.findAll().stream().map(Jarjestaja::getId).collect(Collectors.toList()));
+        jarjestajaFilter.setItemLabelGenerator(id -> {
+            Jarjestaja jarjestaja = jarjestajaService.findById(id);
+            return jarjestaja != null ? jarjestaja.getNimi() : "Tuntematon järjestäjä";
+        });
+
+        nimiFilter.addValueChangeListener(e -> updateGrid());
+        aikaFilter.addValueChangeListener(e -> updateGrid());
+        paikkaFilter.addValueChangeListener(e -> updateGrid());
+        jarjestajaFilter.addValueChangeListener(e -> updateGrid());
+        postinumeroFilter.addValueChangeListener(e -> updateGrid());
+
+        // Add button
+        Button addButton = new Button("Lisää Tapahtuma", e -> {
+            try {
+                TapahtumaForm form = new TapahtumaForm(tapahtumaService, paikkaService, jarjestajaService, (Void v) -> updateGrid());
+                form.setTapahtuma(new Tapahtuma());
+                form.open();
+            } catch (Exception ex) {
+                Notification.show("Tapahtuman lomakkeen avaus epäonnistui: " + ex.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            }
+        });
         addButton.addClassName("button-primary");
-        add(addButton);
 
-        // Dialog for Add/Edit
-        createEditorDialog();
+        // Layout
+        HorizontalLayout filterLayout = new HorizontalLayout(addButton, nimiFilter, aikaFilter, paikkaFilter, jarjestajaFilter, postinumeroFilter);
+        filterLayout.addClassName("filter-container");
+        add(filterLayout, grid);
+        updateGrid();
     }
 
-    private void createEditorDialog() {
-        dialog = new Dialog();
-        dialog.setHeaderTitle("Tapahtuma");
+    private void updateGrid() {
+        List<Tapahtuma> tapahtumat = tapahtumaService.findAll();
 
-        FormLayout formLayout = new FormLayout();
-        TextField nimiField = new TextField("Nimi");
-        DatePicker aikaField = new DatePicker("Aika");
-        TextField osoiteField = new TextField("Osoite");
-        TextField postinumeroField = new TextField("Postinumero");
-        TextField postitoimipaikkaField = new TextField("Postitoimipaikka");
-        TextField puhelinnumeroField = new TextField("Puhelinnumero");
-        TextField kuvausField = new TextField("Kuvaus");
-        ComboBox<Paikat> paikkaField = new ComboBox<>("Paikka");
-        ComboBox<Jarjestaja> jarjestajaField = new ComboBox<>("Järjestäjä");
-
-        List<Paikat> paikat = paikatRepository.findAll();
-        paikkaField.setItems(paikat);
-        paikkaField.setItemLabelGenerator(Paikat::getNimi);
-
-        List<Jarjestaja> jarjestajat = jarjestajaRepository.findAll();
-        jarjestajaField.setItems(jarjestajat);
-        jarjestajaField.setItemLabelGenerator(Jarjestaja::getNimi);
-
-        formLayout.add(nimiField, aikaField, osoiteField, postinumeroField, postitoimipaikkaField, puhelinnumeroField, kuvausField, paikkaField, jarjestajaField);
-
-        binder = new Binder<>(Tapahtuma.class);
-        binder.bind(nimiField, Tapahtuma::getNimi, Tapahtuma::setNimi);
-        binder.bind(aikaField, tapahtuma -> tapahtuma.getAika() != null ? tapahtuma.getAika().toLocalDate() : null, (tapahtuma, date) -> tapahtuma.setAika(date != null ? date.atStartOfDay() : null));
-        binder.bind(osoiteField, Tapahtuma::getOsoite, Tapahtuma::setOsoite);
-        binder.bind(postinumeroField, tapahtuma -> String.valueOf(tapahtuma.getPostinumero()), (tapahtuma, value) -> tapahtuma.setPostinumero(Integer.parseInt(value)));
-        binder.bind(postitoimipaikkaField, Tapahtuma::getPostitoimipaikka, Tapahtuma::setPostitoimipaikka);
-        binder.bind(puhelinnumeroField, Tapahtuma::getPuhelinnumero, Tapahtuma::setPuhelinnumero);
-        binder.bind(kuvausField, Tapahtuma::getKuvaus, Tapahtuma::setKuvaus);
-        binder.bind(paikkaField, Tapahtuma::getPaikka, Tapahtuma::setPaikka);
-        binder.bind(jarjestajaField, Tapahtuma::getJarjestaja, Tapahtuma::setJarjestaja);
-
-        Button saveButton = new Button("Tallenna", e -> saveTapahtuma());
-        saveButton.addClassName("button-primary");
-        Button cancelButton = new Button("Peruuta", e -> dialog.close());
-        dialog.getFooter().add(cancelButton, saveButton);
-
-        dialog.add(formLayout);
-    }
-
-    private void openEditor(Tapahtuma tapahtuma) {
-        binder.setBean(tapahtuma);
-        dialog.open();
-    }
-
-    private void saveTapahtuma() {
-        if (binder.validate().isOk()) {
-            Tapahtuma tapahtuma = binder.getBean();
-            tapahtumaRepository.save(tapahtuma);
-            grid.setItems(tapahtumaRepository.findAll());
-            dialog.close();
+        // Yhdistetyt suodattimet
+        if (!nimiFilter.isEmpty()) {
+            String nimi = nimiFilter.getValue();
+            tapahtumat = tapahtumat.stream()
+                    .filter(t -> t.getNimi() != null && t.getNimi().toLowerCase().contains(nimi.toLowerCase()))
+                    .collect(Collectors.toList());
         }
-    }
+        if (aikaFilter.getValue() != null) {
+            LocalDateTime alku = aikaFilter.getValue().toLocalDate().atStartOfDay();
+            LocalDateTime loppu = alku.plusDays(1);
+            tapahtumat = tapahtumat.stream()
+                    .filter(t -> t.getAika() != null && !t.getAika().isBefore(alku) && !t.getAika().isAfter(loppu))
+                    .collect(Collectors.toList());
+        }
+        if (paikkaFilter.getValue() != null) {
+            Long paikkaId = paikkaFilter.getValue();
+            tapahtumat = tapahtumat.stream()
+                    .filter(t -> t.getPaikka() != null && t.getPaikka().getId().equals(paikkaId))
+                    .collect(Collectors.toList());
+        }
+        if (jarjestajaFilter.getValue() != null) {
+            Long jarjestajaId = jarjestajaFilter.getValue();
+            tapahtumat = tapahtumat.stream()
+                    .filter(t -> t.getJarjestaja() != null && t.getJarjestaja().getId().equals(jarjestajaId))
+                    .collect(Collectors.toList());
+        }
+        if (!postinumeroFilter.isEmpty()) {
+            try {
+                int postinumero = Integer.parseInt(postinumeroFilter.getValue());
+                tapahtumat = tapahtumat.stream()
+                        .filter(t -> t.getPostinumero() == postinumero)
+                        .collect(Collectors.toList());
+            } catch (NumberFormatException e) {
+                Notification.show("Postinumeron on oltava kelvollinen numero!", 3000, Notification.Position.TOP_CENTER);
+                tapahtumat = tapahtumaService.findAll(); // Reset to all items
+            }
+        }
 
-    private void deleteTapahtuma(Tapahtuma tapahtuma) {
-        tapahtumaRepository.delete(tapahtuma);
-        grid.setItems(tapahtumaRepository.findAll());
+        grid.setItems(tapahtumat);
+        if (tapahtumat.isEmpty()) {
+            Notification.show("Ei tuloksia annetuilla suodattimilla.", 3000, Notification.Position.TOP_CENTER);
+        }
     }
 }

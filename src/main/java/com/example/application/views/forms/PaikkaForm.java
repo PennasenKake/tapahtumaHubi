@@ -1,79 +1,86 @@
 package com.example.application.views.forms;
 
+import com.example.application.model.Jarjestaja;
 import com.example.application.model.Paikat;
+import com.example.application.service.PaikkaService;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.textfield.IntegerField;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.ValidationException;
 
-import elemental.json.Json;
-import elemental.json.JsonObject;
-import elemental.json.JsonValue;
-import elemental.json.JsonArray;
-import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.server.VaadinSession;
-
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.function.Consumer;
 
 public class PaikkaForm extends Dialog {
 
-    private TextField nimi = new TextField("Paikan nimi");
-    private TextField osoite = new TextField("Osoite");
-    private IntegerField postinumero = new IntegerField("Postinumero");
-    private TextField postitoimipaikka = new TextField("Postitoimipaikka");
-    private Button tallenna = new Button("Tallenna");
+    private final PaikkaService paikkaService;
+    private final Consumer<Void> updateCallback;
+    private Binder<Paikat> binder = new Binder<>(Paikat.class);
 
-    public PaikkaForm() {
-        setHeaderTitle("Lisää uusi paikka");
+    public PaikkaForm(PaikkaService paikkaService, Consumer<Void> updateCallback) {
+        this.paikkaService = paikkaService;
+        this.updateCallback = updateCallback;
 
-        FormLayout form = new FormLayout();
-        form.add(nimi, osoite, postinumero, postitoimipaikka);
+        setHeaderTitle("Paikka");
 
-        tallenna.addClickListener(event -> tallennaPaikka());
+        FormLayout formLayout = new FormLayout();
+        TextField nimi = new TextField("Paikan nimi");
+        TextField osoite = new TextField("Osoite");
+        IntegerField kapasiteetti = new IntegerField("Kapasiteetti");
+        IntegerField postinumero = new IntegerField("Postinumero");
+        TextField postitoimipaikka = new TextField("Postitoimipaikka");
 
-        Button button = new Button("Peruuta");
+        binder.forField(nimi)
+                .asRequired("Nimi on pakollinen")
+                .bind(Paikat::getNimi, Paikat::setNimi);
+        binder.bind(osoite, Paikat::getOsoite, Paikat::setOsoite);
+        binder.forField(kapasiteetti)
+                .asRequired("Kapasiteetti on pakollinen")
+                .withValidator(val -> val != null && val >= 0, "Kapasiteetin on oltava vähintään 0")
+                .bind(Paikat::getKapasiteetti, Paikat::setKapasiteetti);
+        binder.forField(postinumero)
+                .asRequired("Postinumero on pakollinen")
+                .withValidator(val -> val != null && val >= 0, "Postinumeron on oltava kelvollinen numero")
+                .bind(Paikat::getPostinumero, Paikat::setPostinumero);
+        binder.bind(postitoimipaikka, Paikat::getPostitoimipaikka, Paikat::setPostitoimipaikka);
 
-        VerticalLayout layout = new VerticalLayout(form, tallenna, button);
-        add(layout);
+        Button saveButton = new Button("Tallenna", e -> savePaikka());
+        Button cancelButton = new Button("Peruuta", e -> close());
+        Button deleteButton = new Button("Poista", e -> deletePaikka());
+        deleteButton.getElement().getStyle().set("margin-left", "auto").set("color", "red");
+
+        formLayout.add(nimi, osoite, kapasiteetti, postinumero, postitoimipaikka, saveButton, cancelButton, deleteButton);
+        add(formLayout);
     }
 
-    
-    private void tallennaPaikka() {
-        try {
-            URL url = new URL("/api/paikat"); // suhteellinen URL toimii Vaadinilla
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json");
+    public void setPaikka(Paikat paikka) {
+        binder.setBean(paikka);
+    }
 
-            JsonObject paikkaJson = Json.createObject();
-            paikkaJson.put("nimi", nimi.getValue());
-            paikkaJson.put("paikkaOsoite", osoite.getValue());
-            paikkaJson.put("paikkaPostinumero", postinumero.getValue());
-            paikkaJson.put("paikkaPostitoimipaikka", postitoimipaikka.getValue());
-
-            try (OutputStream os = conn.getOutputStream()) {
-                byte[] input = paikkaJson.toJson().getBytes(StandardCharsets.UTF_8);
-                os.write(input, 0, input.length);
-            }
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_CREATED) {
-                Notification.show("Paikka tallennettu onnistuneesti!");
-                close(); // Sulje lomake
-            } else {
-                Notification.show("Tallennus epäonnistui. Virhekoodi: " + responseCode);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Notification.show("Virhe tallennettaessa paikkaa: " + e.getMessage());
+    private void savePaikka() {
+        if (binder.validate().isOk()) {
+            Paikat paikka = binder.getBean();
+            paikkaService.save(paikka);
+            Notification.show("Paikka tallennettu!");
+            updateCallback.accept(null);
+            close();
         }
     }
 
-
+    private void deletePaikka() {
+        Paikat paikka = binder.getBean();
+        if (paikka.getId() != null) {
+            try {
+                paikkaService.delete(paikka.getId());
+                Notification.show("Paikka poistettu!");
+                updateCallback.accept(null);
+                close();
+            } catch (Exception e) {
+                Notification.show("Paikan poistaminen epäonnistui: " + e.getMessage(), 3000, Notification.Position.TOP_CENTER);
+            }
+        }
+    }
 }

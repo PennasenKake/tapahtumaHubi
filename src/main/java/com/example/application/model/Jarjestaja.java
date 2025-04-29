@@ -1,8 +1,6 @@
 package com.example.application.model;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Jarjestaja {
@@ -12,9 +10,10 @@ public class Jarjestaja {
 
     private String nimi;
     private String yhteystiedot;
+    private String tyyppi; // Lisätään tyyppi tehtävänannon mukaisesti
 
-    @OneToMany(mappedBy = "jarjestaja")
-    private List<Tapahtuma> tapahtumat = new ArrayList<>();
+    @OneToOne(mappedBy = "jarjestaja")
+    private Tapahtuma tapahtuma;
 
     // Constructors
     public Jarjestaja() {}
@@ -26,6 +25,8 @@ public class Jarjestaja {
     public void setNimi(String nimi) { this.nimi = nimi; }
     public String getYhteystiedot() { return yhteystiedot; }
     public void setYhteystiedot(String yhteystiedot) { this.yhteystiedot = yhteystiedot; }
-    public List<Tapahtuma> getTapahtumat() { return tapahtumat; }
-    public void setTapahtumat(List<Tapahtuma> tapahtumat) { this.tapahtumat = tapahtumat; }
+    public String getTyyppi() { return tyyppi; }
+    public void setTyyppi(String tyyppi) { this.tyyppi = tyyppi; }
+    public Tapahtuma getTapahtuma() { return tapahtuma; }
+    public void setTapahtuma(Tapahtuma tapahtuma) { this.tapahtuma = tapahtuma; }
 }
