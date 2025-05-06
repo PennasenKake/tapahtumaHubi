@@ -1,4 +1,18 @@
 
+KESKEN, täydentyy vielä
+
+Projektista löytyy ensimmäinen laskeutumis sivu, mistä ohjataan tutustumaan tapahtumiin
+
+Tapahtuma sivua oli tarkoitus laajentaa niin että käyttäjä voi ilmoittautua tapatumiin 
+ja admin näkee osallistujat
+
+Paikat sivulla voi lisätä ja tarkastella paikkoja, samoin järjestäjä
+Tapahtumat sivulla voi lisätä uusia taphtumia, lisäämisessä löytää järjestäjän ja paikan, 
+mitkä voi liittää tapahtumaan
+
+KESKEN jää turvallisuus osa 
+
+
 
 Kategoria	                Kriteeri	                              Pisteet	    Tehty (✅/❌)	 Kommentti	 Saadut pisteet
 
@@ -26,10 +40,10 @@ Ulkoasu (SPA)	            Navigointipalkki	                            3			 ✅
 Ulkoasu (SPA)	            Footer	                                        4			 ✅         Oli vaikea saada asettumaan, mutta tyydyin toteutukseen
 Ulkoasu (SPA)	            Kolme erityyppistä sisältösivua	                5			 ✅         Paikat, järjestäjä,, tapahtumat ja kirjautumis sivu + etusivu
 
-Autentikointi ja tietoturva	Security-palikka käyttöön	                    1			 ✅         löytyy pom.xml luokasta
-Autentikointi ja tietoturva	Kirjautumissivu	                                2			 ✅         LoginView löytyy
+Autentikointi ja tietoturva	Security-palikka käyttöön	                    1			 ✅         löytyy pom.xml luokasta, mutta kommentoituna 
+Autentikointi ja tietoturva	Kirjautumissivu	                                2			 ✅         LoginView löytyy, sisältää rekisteröitymis formin
 Autentikointi ja tietoturva	Käyttäjäentiteetti + roolit	                    3			
-Autentikointi ja tietoturva	Käyttöoikeus näkymittäin (user/admin)	        4			
+Autentikointi ja tietoturva	Käyttöoikeus näkymittäin (user/admin)	        4			            löytyy tiedostot joihin voisi näkymän rakentaa
 Autentikointi ja tietoturva	Kustomoitu virheilmoitus	                    5			
 
 Lisätoiminnallisuudet	    Projekti GitHubiin	                            1			 ✅
